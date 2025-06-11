@@ -4,8 +4,20 @@ This project aims to gather, clean, and validate time series datasets related to
 ---
 
 ## Project Structure
-<pre> ```text Power_System_Data_Collection_and_Validation/ ├── OPSD_TimeSeries/ │ ├── cleaned/ │ ├── raw/ │ └── opsd_analysis.ipynb │ ├── SimBench/ │ ├── cleaned/ │ ├── raw/ │ └── simbench_analysis.ipynb │ ├── other sources etc. (It will be added in the future) │ └── README.md ``` </pre>
----
+Power_System_Data_Collection_and_Validation/
+├── OPSD_TimeSeries/
+│   ├── cleaned/
+│   ├── raw/
+│   └── opsd_analysis.ipynb
+│
+├── SimBench/
+│   ├── cleaned/
+│   ├── raw/
+│   └── simbench_analysis.ipynb
+│
+├── other sources etc. (It will be added in the future)
+│
+└── README.md
 
 ## Data Sources
 | Source     | Description                                                                                         | Documentation                                                  | Repository                                      |
