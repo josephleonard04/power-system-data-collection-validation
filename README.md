@@ -4,6 +4,7 @@ This project aims to gather, clean, and validate time series datasets related to
 ---
 
 ## Project Structure
+```plaintext
 Power_System_Data_Collection_and_Validation/
 ├── OPSD_TimeSeries/
 │   ├── cleaned/
@@ -18,6 +19,8 @@ Power_System_Data_Collection_and_Validation/
 ├── other sources etc. (It will be added in the future)
 │
 └── README.md
+```
+
 
 ## Data Sources
 | Source     | Description                                                                                         | Documentation                                                  | Repository                                      |
