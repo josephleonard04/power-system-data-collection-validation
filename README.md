@@ -1,5 +1,5 @@
 # Power System Data Collection and Validation
-This project aims to gather, clean, and validate time series datasets related to power and energy systems. The data will be centralized, documented, and used to support planning and simulation tasks within energy network research.
+This project cleans and validates time series datasets related to electricity systems. It serves as a centralized resource to support analysis, planning, and simulation in energy network research. The datasets include synthetic and real-world measurements of load, generation, and market prices, structured to ensure clarity, consistency, and reproducibility.
 
 ---
 
