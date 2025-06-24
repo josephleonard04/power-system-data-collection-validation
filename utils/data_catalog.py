@@ -47,7 +47,7 @@ def load_data_sources():
         {
             "Source": "OPSD",
             "Description": "Open Power System Data - EU-wide TSO-provided time series",
-            "Number of Profiles": "298",
+            "Number of Profiles": "220",
             "Profile Types": ["load", "renewable", "capacity", "price", "forecast"],
             "Load": ["active", "aggregated", "national", "historical"],
             "Renewable": ["solar", "wind"],
