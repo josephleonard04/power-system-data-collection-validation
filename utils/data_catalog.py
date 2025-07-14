@@ -1,7 +1,7 @@
 # utils/data_catalog.py
 
 import pandas as pd
-from IPython.display import Markdown
+from IPython.display import HTML
 
 EU_COUNTRIES = [
     "Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia",
@@ -15,121 +15,149 @@ def load_data_sources():
         {
             "Source": "AgenceORE_Consumption_lt36kVA",
             "Description": "Aggregated half-hourly electricity consumption data from consumption points with power subscriptions below 36kVA.",
-            "Number of Profiles": "130",
+            "Total Number of Profiles": "130",
             "Profile Types": ["load", "consumption points", "energy consumption"],
-            "Load": ["active", "aggregated", "residential"],
+            "Type of Load": ["active", "aggregated", "residential"],
             "Renewable": [],
             "Environment": [],
             "Economy": [],
+            "Voltage Level": [],
             "Processed": True,
             "Synthetic": False,
             "Horizon": "2020–2024",
             "Time Resolution": ["30min"],
-            "Geographical": ["France"],
+            "Location": ["France"],
+            "Geographical": ["regional", "distribution"],
             "Folder": "AgenceORE_Consumption_lt36kVA/"
         },
         {
             "Source": "eCO2mix_France_GenerationBySource",
             "Description": "Real-time and historical electricity generation, consumption, forecast, and emissions data for France, disaggregated by energy source and technology.",
-            "Number of Profiles": "36",
-            "Profile Types": ["load", "production", "renewable", "forecast", "environment" ],
-            "Load": ["consumption", "active", "national", "aggregated"],
+            "Total Number of Profiles": "36",
+            "Profile Types": ["load", "production", "renewable", "forecast", "environment"],
+            "Type of Load": ["consumption", "active", "aggregated"],
             "Renewable": ["solar", "wind", "hydro", "bioenergy"],
             "Environment": ["co2 intensity"],
             "Economy": [],
+            "Voltage Level": [],
             "Processed": True,
             "Synthetic": False,
             "Horizon": "2012-2022",
             "Time Resolution": ["15min"],
-            "Geographical": ["France"],
+            "Location": ["France"],
+            "Geographical": ["regional"],
             "Folder": "eCO2mix_France_GenerationBySource/"
         },
         {
             "Source": "OPSD",
             "Description": "Open Power System Data - EU-wide TSO-provided time series",
-            "Number of Profiles": "220",
+            "Total Number of Profiles": "220",
             "Profile Types": ["load", "renewable", "capacity", "price", "forecast"],
-            "Load": ["active", "aggregated", "national", "historical"],
+            "Type of Load": ["active", "aggregated", "historical"],
             "Renewable": ["solar", "wind"],
             "Environment": [],
             "Economy": ["price"],
+            "Voltage Level": [],
             "Processed": True,
             "Synthetic": False,
             "Horizon": "2015-2020",
             "Time Resolution": ["15min", "30min", "60min"],
-            "Geographical": ["EU", "United Kingdom", "Switzerland", "Norway", "Montenegro", "Serbia", "Ukraine"],
+            "Location": ["EU", "United Kingdom", "Switzerland", "Norway", "Montenegro", "Serbia", "Ukraine"],
+            "Geographical": ["national"],
             "Folder": "OPSD_TimeSeries/"
         },
         {
             "Source": "SimBench",
             "Description": "Synthetic power system benchmark datasets for grid studies",
-            "Number of Profiles": 614,
+            "Total Number of Profiles": 614,
             "Profile Types": ["load", "renewable", "powerplant", "storage"],
-            "Load": ["active", "reactive", "residential", "industry", "commercial"],
+            "Type of Load": ["active", "reactive", "residential", "industry", "commercial"],
             "Renewable": ["solar", "wind", "biomass", "hydro"],
             "Environment": [],
             "Economy": [],
+            "Voltage Level": ["mixed"],
             "Processed": True,
             "Synthetic": True,
             "Horizon": "2016-2017",
             "Time Resolution": ["15min"],
-            "Geographical": ["Germany"],
+            "Location": ["Germany"],
+            "Geographical": ["nodal"],
             "Folder": "SimBench/"
+        },
+        {
+            "Source": "Zenodo",
+            "Description": "Electric load profiles of 50 small and medium-sized industrial plants in Germany, recorded in 15-minute intervals over one year",
+            "Total Number of Profiles": "50",
+            "Profile Types": ["load"],
+            "Type of Load": ["active", "industrial"],
+            "Renewable": [],
+            "Environment": [],
+            "Economy": [],
+            "Voltage Level": [],
+            "Processed": True,
+            "Synthetic": False,
+            "Horizon": "2016-2017",
+            "Time Resolution": ["15min"],
+            "Location": ["Germany"],
+            "Geographical": ["regional"],
+            "Folder": "Zenodo_IndustrialLoadProfiles/"
+        },
+        {
+            "Source": "Ember",
+            "Description": "Monthly electricity generation, demand, and emissions data for European countries, including breakdowns by fuel type and generation source",
+            "Total Number of Profiles": "Varies by country and fuel type",
+            "Profile Types": ["load", "renewable", "production"],
+            "Type of Load": ["active", "aggregated"],
+            "Renewable": ["wind", "solar", "hydro", "bioenergy"],
+            "Environment": ["CO2 emissions", "CO2 intensity"],
+            "Economy": [],
+            "Voltage Level": [],
+            "Processed": True,
+            "Synthetic": False,
+            "Horizon": "2015–2025",
+            "Time Resolution": ["monthly"],
+            "Location": ["Europe"],
+            "Geographical": ["national"],
+            "Folder": "Ember_MonthlyElectricity_Europe/"
         }
     ]
     df = pd.DataFrame(data_sources)
+
+    # Make 'Folder' column clickable links
+    df["Folder"] = df["Folder"].apply(lambda f: f'<a href="{f}">Open Folder</a>')
+
     pd.set_option('display.max_colwidth', None)
     return df
 
-def query_data_sources(df, 
-                       load=None, 
-                       renewable=None, 
-                       environment=None, 
-                       economy=None,
-                       synthetic=None,
-                       processed=None,
-                       geographical=None):
-    
+def query_data_sources(df, **filters):
     result = df.copy()
 
-    if load:
-        result = result[result["Load"].apply(lambda x: all(item in x for item in load))]
+    for key, value in filters.items():
+        if key not in df.columns:
+            raise ValueError(f"'{key}' is not a valid column. Available columns: {list(df.columns)}")
 
-    if renewable:
-        result = result[result["Renewable"].apply(lambda x: all(item in x for item in renewable))]
+        if isinstance(df[key].iloc[0], list):
+            if isinstance(value, str):
+                value = [value]
 
-    if environment:
-        result = result[result["Environment"].apply(lambda x: all(item in x for item in environment))]
+            def list_match(source_list):
+                expanded = []
+                for item in source_list:
+                    if item == "EU":
+                        expanded.extend(EU_COUNTRIES)
+                    else:
+                        expanded.append(item)
+                return all(v in expanded for v in value)
 
-    if economy:
-        result = result[result["Economy"].apply(lambda x: all(item in x for item in economy))]
-
-    if synthetic is not None:
-        result = result[result["Synthetic"] == synthetic]
-
-    if processed is not None:
-        result = result[result["Processed"] == processed]
-
-    if geographical:
-        if isinstance(geographical, str):
-            geographical = [geographical]
-
-        def geo_match(source_geo):
-            expanded = []
-            for g in source_geo:
-                if g == "EU":
-                    expanded.extend(EU_COUNTRIES)
-                else:
-                    expanded.append(g)
-            return all(g in expanded for g in geographical)
-
-        result = result[result["Geographical"].apply(geo_match)]
+            result = result[result[key].apply(list_match)]
+        else:
+            result = result[result[key] == value]
 
     return result.reset_index(drop=True)
 
-def show_folder_links(results):
+def show_data_table(results):
     if results.empty:
-        return Markdown("**No datasets match your query.**")
-    
-    links = [f"- [{row['Source']}]({row['Folder']})" for _, row in results.iterrows()]
-    return Markdown("\n".join(links))
+        return HTML("<b>No datasets match your query.</b>")
+
+    # Render DataFrame as HTML with links
+    return HTML(results.to_html(escape=False))
