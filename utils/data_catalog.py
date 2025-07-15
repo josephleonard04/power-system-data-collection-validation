@@ -49,6 +49,24 @@ def load_data_sources():
             "Folder": "eCO2mix_France_GenerationBySource/"
         },
         {
+            "Source": "ELMAS",
+            "Description": "One-year dataset of hourly electrical load profiles from 424 French industrial and tertiary sectors (2018)",
+            "Total Number of Profiles": 18,
+            "Profile Types": ["load"],
+            "Type of Load": ["active", "industrial", "tertiary", "clustered"],
+            "Renewable": [],
+            "Environment": [],
+            "Economy": [],
+            "Voltage Level": [],
+            "Processed": True,
+            "Synthetic": False,
+            "Horizon": "2018",
+            "Time Resolution": ["60min"],
+            "Location": ["France"],
+            "Geographical": ["national"],
+            "Folder": "ELMAS/"
+        },
+        {
             "Source": "Ember",
             "Description": "Monthly electricity generation, demand, and emissions data for European countries, including breakdowns by fuel type and generation source",
             "Total Number of Profiles": "Varies by country and fuel type",
@@ -64,7 +82,7 @@ def load_data_sources():
             "Time Resolution": ["monthly"],
             "Location": ["Europe"],
             "Geographical": ["national"],
-            "Folder": "Ember_MonthlyElectricity_Europe/"
+            "Folder": "Ember/"
         },
         {
             "Source": "OPSD",
@@ -118,7 +136,7 @@ def load_data_sources():
             "Time Resolution": ["15min"],
             "Location": ["Germany"],
             "Geographical": ["regional"],
-            "Folder": "Zenodo_IndustrialLoadProfiles/"
+            "Folder": "Zenodo/"
         }
     ]
     df = pd.DataFrame(data_sources)
