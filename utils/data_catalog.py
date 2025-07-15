@@ -52,7 +52,7 @@ def load_data_sources():
             "Source": "ELMAS",
             "Description": "One-year dataset of hourly electrical load profiles from 424 French industrial and tertiary sectors (2018)",
             "Total Number of Profiles": 18,
-            "Profile Types": ["load"],
+            "Profile Types": ["load", "temperature"],
             "Type of Load": ["active", "industrial", "tertiary", "clustered"],
             "Renewable": [],
             "Environment": [],
